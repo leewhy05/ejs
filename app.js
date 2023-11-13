@@ -3,9 +3,9 @@ const app = express();
 const PORT = 5050;
 const morgan = require('morgan')
 const mongoose = require('mongoose');
+const connect = require('./db/mongoDB')
 require('dotenv/config')
 
-const mongoDBUrl = process.env.DBURL
 
 // custom middlewares
 app.set('view engine', 'ejs')
@@ -49,8 +49,18 @@ app.use( (req,res)=>{
 })
 
 //db connection
-mongoose.connect(mongoDBUrl).then(()=> console.log('connected successfully'));
+connect()
+.then(()=>{
+    try{
+      
 app.listen(PORT, ()=>{
     console.log(`Server connected to http://localhost:${PORT}`);
 
+})
+    }catch(error){
+        console.log('cannot connect to the server');
+    }
+})
+.catch((error)=>{
+    console.log('invalid database connection...!',error);
 })
