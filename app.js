@@ -1,14 +1,17 @@
 const express = require("express");
 const app = express();
-const PORT = 5050;
+const port = process.env.PORT || 5050;
 const morgan = require('morgan')
 const mongoose = require('mongoose');
 const connect = require('./db/mongoDB')
 require('dotenv/config')
+const TASKS = require('./model/taskModel')
 
 
 // custom middlewares
 app.set('view engine', 'ejs')
+app.use(express.urlencoded({ extended: true })); // to parse the incoming requests with url encoded payloads
+
 
 // app.use((req,res,next)=>{
 //     console.log('new request made');
@@ -18,6 +21,47 @@ app.set('view engine', 'ejs')
 //     next()
 // })
 
+// Testing our model and database 
+// .save method is a mongoose method for saving data to database
+app.get('/post-task',async(req,res)=>{
+ const testData = new TASKS({
+    name: 'leewhy',
+    title: 'NodeMon Tuts',
+    task: 'create a web dev'
+
+ })
+ try{
+      const newTask = await testData.save()
+      res.status(201).send(newTask)
+ }catch(error){
+    console.log(error);
+ }
+
+})
+
+// .find method is a mongoose method for finding data to database
+
+app.get('/get-post', async(req,res)=>{
+    try{
+        const getTasks = await TASKS.find();
+        res.status(200).send(getTasks)
+    }catch(error){
+        console.log(error);
+    }
+})
+
+
+// .findById method is a mongoose method for finding a specific data from our database
+   app.get ('/single-task', async (req,res)=>{
+    try{
+        const singleTask = await TASKS.findById("65522842710c25d38420ac47");
+        res.status(200).send(singleTask)
+    }catch(error){
+        console.log(error);
+    }
+   })
+// end of database test
+
 app.use(morgan('dev'))
 app.use(express.static('public'))
 
@@ -26,14 +70,43 @@ app.use(express.static('public'))
 // res.send("Welcome home")
 
 // })
-const tasks =[
-    {name:'Halimat',title:'halimats clothing', task:'client deliveries this morning'},
-    {name:'Chimelu',title:'I.T experience', task:'to give my instructor my log book'},
-    {name:'Leewhy',title:'Leewhy Concept', task:'Trading and general contracts'}
-]
 
-app.get('/', (req,res)=>{
-    res.render('index', {title:'Home || Page', tasks})
+// const tasks =[
+//     // {name:'Halimat',title:'halimats clothing', task:'client deliveries this morning'},
+//     // {name:'Chimelu',title:'I.T experience', task:'to give my instructor my log book'},
+//     // {name:'Leewhy',title:'Leewhy Concept', task:'Trading and general contracts'}
+// ]
+
+
+//api
+app.post('/api/v1/create', async(req,res)=>{
+    console.log(req.body);
+    const newTask = new TASKS(req.body)
+    try{
+        await newTask.save();
+        res.status(201).redirect('/')
+    }catch(error){
+        console.log(error);
+    }
+})
+app.get('/api/v1/route/:id',async (req,res)=>{
+    const id = req.params.id
+    console.log(id);
+    try{
+    const result = await TASKS.findById(id)
+      res.status(200).render('singlePage',{title:'single || page',task:result})
+    }catch(error){
+        console.log(error);
+    }
+})
+//page routes
+app.get('/', async(req,res)=>{
+    try{
+        const result = await TASKS.find();
+        res.render('index', {title:'Home || Page', tasks:result})
+    }catch(error){
+        console.log(error);
+    }
 })
 
 app.get('/about', (req,res)=>{
@@ -53,8 +126,8 @@ connect()
 .then(()=>{
     try{
       
-app.listen(PORT, ()=>{
-    console.log(`Server connected to http://localhost:${PORT}`);
+app.listen(port, ()=>{
+    console.log(`Server connected to http://localhost:${port}`);
 
 })
     }catch(error){
