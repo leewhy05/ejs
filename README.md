@@ -7,7 +7,7 @@ Thanks for checking out this application.
 This was created using the express framework for node.
 
 ## The site
-nodejs backendonly project, with MVC architecture.
+nodejs backend only project, with MVC architecture.
 
 The project is a task manager app, for just creating, editing, deleting all task saved to database
 

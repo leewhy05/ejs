@@ -2,11 +2,11 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 5050;
 const morgan = require('morgan')
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const connect = require('./db/mongoDB')
 require('dotenv/config')
 const TASKS = require('./model/taskModel')
-
+const taskRouter = require('./router/taskRouter')
 
 // custom middlewares
 app.set('view engine', 'ejs')
@@ -79,26 +79,7 @@ app.use(express.static('public'))
 
 
 //api
-app.post('/api/v1/create', async(req,res)=>{
-    console.log(req.body);
-    const newTask = new TASKS(req.body)
-    try{
-        await newTask.save();
-        res.status(201).redirect('/')
-    }catch(error){
-        console.log(error);
-    }
-})
-app.get('/api/v1/route/:id',async (req,res)=>{
-    const id = req.params.id
-    console.log(id);
-    try{
-    const result = await TASKS.findById(id)
-      res.status(200).render('singlePage',{title:'single || page',task:result})
-    }catch(error){
-        console.log(error);
-    }
-})
+app.use('/api/v1',taskRouter)
 //page routes
 app.get('/', async(req,res)=>{
     try{

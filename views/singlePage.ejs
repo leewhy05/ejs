@@ -9,7 +9,9 @@
         <h3><%- task.title  %></h1>
         <h4><%- task.task  %></h1>
       </div>
-      <button>delete task</button>
+      <button>
+        <a href="/api/v1/delete/<%- task._id %>">delete task</a>
+      </button>
       <button>edit task</button>
     
   </main>
