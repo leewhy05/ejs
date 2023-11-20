@@ -10,11 +10,14 @@
         <h4><%- task.task  %></h1>
       </div>
       <button>
-        <a href="/api/v1/delete/<%- task._id %>">delete task</a>
+        <a href="/api/v1/delete/<%= task._id %>">delete task</a>
       </button>
-      <button>edit task</button>
+      <button>
+        <a href="/api/v1/editpage/<%= task._id %>">Edit task</a>
+      </button>
     
   </main>
+  
     
     <%- include('../partials/footer.ejs')  %>
 </body>
